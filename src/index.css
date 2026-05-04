@@ -5,6 +5,26 @@
   box-sizing: border-box;
 }
 
+/* Global Scrollbar - Hidden but Functional */
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
+/* Firefox - Hidden scrollbar */
+html {
+  scrollbar-width: none;
+}
+
 /* Background takes full screen */
 body, html {
   width: 100%;

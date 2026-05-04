@@ -7,6 +7,13 @@
   position: relative;
   max-width: 600px;
   margin: 0 auto;
+  max-height: 90vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.setup-container::-webkit-scrollbar {
+  width: 0px;
 }
 
 .subject-title {
@@ -25,10 +32,13 @@
   padding: 2rem;
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 section {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
 }
 
 section h4 {
@@ -52,25 +62,11 @@ section h4 {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   background: rgba(0, 0, 0, 0.2);
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 210, 255, 0.6) transparent;
+  scrollbar-width: none;
 }
 
 .scrollable-group::-webkit-scrollbar {
-  width: 8px;
-}
-
-.scrollable-group::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scrollable-group::-webkit-scrollbar-thumb {
-  background: rgba(0, 210, 255, 0.6);
-  border-radius: 10px;
-}
-
-.scrollable-group::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 210, 255, 0.8);
+  width: 0px;
 }
 
 .button-group button {
@@ -140,7 +136,13 @@ section h4 {
   flex-direction: column;
   padding: 2rem;
   height: 100vh;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+
+.quiz-active::-webkit-scrollbar {
+  width: 0px;
 }
 
 .quiz-header {
@@ -290,7 +292,13 @@ section h4 {
   height: 100vh;
   z-index: 10;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 2rem 1rem;
+  scrollbar-width: none;
+}
+
+.result-page::-webkit-scrollbar {
+  width: 0px;
 }
 
 .result-wrapper {
