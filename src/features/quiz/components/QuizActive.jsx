@@ -41,20 +41,25 @@ export default function QuizActive({ engine }) {
   const progressPercentage = ((currentIdx) / firstAttemptQuestions.length) * 100;
 
   return (
-    <div className="w-full max-w-4xl mx-auto flex flex-col h-full pt-4 md:pt-8 px-2 md:px-4">
-      <div className="flex flex-wrap md:flex-nowrap justify-between items-center gap-4 mb-6">
+    <div className="w-full max-w-5xl mx-auto flex flex-col h-full pt-8 md:pt-12 px-4 md:px-6 font-sans relative">
+      
+      {/* Background glow for the active quiz */}
+      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-cyan-500/5 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+
+      <div className="flex flex-wrap md:flex-nowrap justify-between items-center gap-6 mb-10">
         
-        <div className="flex flex-col flex-1 bg-[rgba(11,31,42,0.6)] backdrop-blur-md border border-[rgba(255,255,255,0.1)] rounded-xl p-3 md:p-4 shadow-lg min-w-[140px]">
-          <div className="flex justify-between items-end mb-2">
-            <span className="text-[10px] md:text-xs font-bold text-gray-400 tracking-widest uppercase">Progress</span>
-            <span className="text-lg md:text-2xl font-black text-white tracking-wider tabular-nums">{currentIdx + 1} <span className="text-gray-500 text-sm">/ {firstAttemptQuestions.length}</span></span>
+        <div className="flex flex-col flex-1 bg-[rgba(15,20,30,0.6)] backdrop-blur-2xl border border-[rgba(255,255,255,0.1)] rounded-3xl p-5 md:p-8 shadow-[0_0_30px_rgba(0,0,0,0.5)] min-w-[140px] relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent"></div>
+          <div className="flex justify-between items-end mb-4">
+            <span className="text-[11px] md:text-sm font-bold text-gray-400 tracking-widest uppercase">Progress</span>
+            <span className="text-2xl md:text-3xl font-black text-white tabular-nums tracking-wider drop-shadow-md">{currentIdx + 1} <span className="text-gray-500 text-sm md:text-base font-semibold">/ {firstAttemptQuestions.length}</span></span>
           </div>
-          <div className="w-full h-2 md:h-3 bg-[rgba(0,0,0,0.4)] rounded-full overflow-hidden border border-[rgba(255,255,255,0.05)] shadow-inner">
+          <div className="w-full h-4 md:h-5 bg-[rgba(0,0,0,0.6)] rounded-full overflow-hidden border border-[rgba(255,255,255,0.05)] shadow-inner">
             <div 
-              className="h-full bg-gradient-to-r from-[#00d2ff] to-[#3a7bd5] rounded-full transition-all duration-500 ease-out relative"
+              className="h-full bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full transition-all duration-500 ease-out relative shadow-[0_0_20px_rgba(0,210,255,0.8)]"
               style={{ width: `${progressPercentage}%` }}
             >
-              <div className="absolute top-0 right-0 bottom-0 w-8 bg-white/30 blur-[4px]"></div>
+              <div className="absolute top-0 right-0 bottom-0 w-8 bg-white/50 blur-[3px]"></div>
             </div>
           </div>
         </div>
