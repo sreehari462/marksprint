@@ -1,0 +1,12 @@
+refactor: major architectural overhaul, ui/ux polish, and vercel prep
+
+- refactor: transition from monolithic structure to Feature-Sliced design
+- refactor: extract robust quiz state logic into useQuizEngine hook
+- feat: integrate Tailwind CSS and Inter font for premium Glassmorphism aesthetics
+- feat: add Practice Mode, Review Section, and custom UI toggles
+- feat: implement ThemeProvider Context and MainLayout for persistent animations
+- fix: resolve subject rotation glitches, layout shifting, and unscrollable views
+- fix: missing lucide-react icon breaking vite production build
+- chore: cleanly bundle CSV assets via Vite into src/data/ and remove legacy folders
+- build: configure vercel.json to support React Router SPA client-side routing
+- docs: update README with modern tech stack, co-creator attribution, and contribution guide
