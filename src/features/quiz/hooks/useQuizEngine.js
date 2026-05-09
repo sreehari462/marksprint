@@ -22,7 +22,7 @@ const CSV_MAP = {
 
 export function useQuizEngine(subject) {
   // Quiz Configuration State
-  const [quizMode, setQuizMode] = useState("setup");
+  const [quizMode, setQuizMode] = useState("setup"); // "setup", "active", "result", "revision"
   const [quizType, setQuizType] = useState("full");
   const [selectedLessons, setSelectedLessons] = useState([]);
   const [selectedVolume, setSelectedVolume] = useState("all");
@@ -201,6 +201,39 @@ export function useQuizEngine(subject) {
     setQuizMode("result");
   }, []);
 
+  // Start Revision Mode
+  const startRevision = useCallback(() => {
+    if (allQuestions.length === 0) {
+      alert("No questions available for this subject");
+      return;
+    }
+
+    let filtered = [...allQuestions];
+    if (quizType === "volume" && selectedVolume !== "all") {
+      filtered = filtered.filter(q => q.vol === selectedVolume);
+    }
+    if (quizType === "lesson" && selectedLessons.length > 0) {
+      filtered = filtered.filter(q => selectedLessons.includes(q.lesson));
+    }
+    if (questionCount > 0 && questionCount < filtered.length) {
+      filtered = filtered.slice(0, parseInt(questionCount));
+    }
+
+    filtered = filtered.map(q => {
+      const options = [
+        { text: q.option_1, img: q.option_1_image },
+        { text: q.option_2, img: q.option_2_image },
+        { text: q.option_3, img: q.option_3_image },
+        { text: q.option_4, img: q.option_4_image }
+      ].filter(o => o.text || o.img);
+      return { ...q, displayOptions: options };
+    });
+
+    setQuizQuestions(filtered);
+    setCurrentIdx(0);
+    setQuizMode("revision");
+  }, [allQuestions, quizType, selectedVolume, selectedLessons, questionCount]);
+
   return {
     // Config state
     quizMode, setQuizMode,
@@ -225,6 +258,6 @@ export function useQuizEngine(subject) {
     isInRepeatMode,
     
     // Actions
-    startQuiz, handleAnswer, finishQuiz
+    startQuiz, handleAnswer, finishQuiz, startRevision
   };
 }

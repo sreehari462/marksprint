@@ -100,10 +100,28 @@
         .content {
             width: 100%;
             max-width: 600px;
+            transition: all 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+            position: absolute;
+            opacity: 0;
+            transform: translateY(50px);
+            pointer-events: none;
         }
 
-        .content.hidden {
-            display: none;
+        .content.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+            position: relative;
+        }
+
+        .content.exit-up {
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+
+        .content.exit-down {
+            opacity: 0;
+            transform: translateY(50px);
         }
 
         /* Middle section - Image */
@@ -153,7 +171,7 @@
             background: none;
             border: none;
             padding: 8px 16px;
-            border-radius: 4px;
+            border-radius: 0;
         }
 
         .nav-item:hover {
@@ -231,7 +249,7 @@
         /* Skills styling */
         .skill-item {
             border: 1px solid #1e5a96;
-            border-radius: 8px;
+            border-radius: 0;
             padding: 16px;
             background-color: rgba(26, 77, 122, 0.4);
             backdrop-filter: blur(4px);
@@ -268,7 +286,7 @@
 
         .project-card {
             border: 1px solid #1e5a96;
-            border-radius: 8px;
+            border-radius: 0;
             padding: 24px;
             background-color: rgba(26, 77, 122, 0.4);
             backdrop-filter: blur(4px);
@@ -309,7 +327,7 @@
             font-size: 11px;
             font-weight: 700;
             padding: 4px 12px;
-            border-radius: 12px;
+            border-radius: 0;
             border: 1px solid;
             white-space: nowrap;
         }
@@ -334,7 +352,7 @@
 
         .achievement-card {
             border: 1px solid #1e5a96;
-            border-radius: 8px;
+            border-radius: 0;
             padding: 24px;
             background-color: rgba(26, 77, 122, 0.4);
             backdrop-filter: blur(4px);
@@ -388,7 +406,7 @@
 
         .cert-badge {
             border: 1px solid #1e5a96;
-            border-radius: 20px;
+            border-radius: 0;
             padding: 8px 16px;
             color: #e0e7ff;
             font-size: 12px;
@@ -410,7 +428,7 @@
 
         .contact-card {
             border: 1px solid #1e5a96;
-            border-radius: 8px;
+            border-radius: 0;
             padding: 24px;
             background-color: rgba(26, 77, 122, 0.4);
             backdrop-filter: blur(4px);
@@ -429,7 +447,7 @@
             width: 40px;
             height: 40px;
             border: 1px solid #fbbf24;
-            border-radius: 4px;
+            border-radius: 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -468,7 +486,6 @@
 <body>
     <div class="particles" id="particles"></div>
     <div class="spark-container" id="sparkContainer"></div>
-
     <div class="container">
         <!-- LEFT: Text Content -->
         <div class="left-section">
@@ -480,22 +497,21 @@
                 <p class="subtitle">PROTAGONIST OF THE GRIND</p>
                 <h1>S.K.SREEHARI</h1>
                 <div class="description">
-                    <p>I'm the protagonist of my own grind. I started off like everyone else—average, inconsistent, testing things without direction—but I've stepped onto a different path. Instead of staying stuck, I chose to level up.</p>
-                    <p>Unlike most people who plateau and settle, I'm building a system for myself—skills, discipline, and execution. Every project I touch, every concept I learn, every failure I take—it all stacks. I don't wait for some "reawakening" moment. I force growth.</p>
-                    <p>While others stay limited by their current abilities, I'm constantly expanding mine—coding, building apps, competing, learning, creating: There's no fixed ceiling here. The more I push, the stronger I get.</p>
+                    <p>I'm the protagonist of my own grind. I started off like everyone else, but I decided to push my limits and see how far I could go.</p>
+                    <p>My journey is defined by continuous learning, building, and evolving. I don't just write code; I craft experiences and solve problems that matter.</p>
                 </div>
             </div>
 
-            <div class="content hidden" id="skillsContent">
+            <div class="content" id="skillsContent">
                 <div class="logo">
                     <div class="logo-circle">S</div>
                     <div class="logo-text">RANK</div>
                 </div>
-                <p class="subtitle">ARSENAL OF THE MONARCH</p>
+                <p class="subtitle">ARSENAL</p>
                 <h1>SKILLS</h1>
                 <div class="skill-item">
                     <span class="skill-label">FRONTEND</span>
-                    <span class="skill-description">HTML, CSS, JavaScript (learning React)</span>
+                    <span class="skill-description">React, Vite, Tailwind CSS, Framer Motion</span>
                 </div>
                 <div class="skill-item">
                     <span class="skill-label">BACKEND</span>
@@ -511,7 +527,7 @@
                 </div>
             </div>
 
-            <div class="content hidden" id="projectsContent">
+            <div class="content" id="projectsContent">
                 <div class="logo">
                     <div class="logo-circle">S</div>
                     <div class="logo-text">RANK</div>
@@ -554,7 +570,7 @@
                 </div>
             </div>
 
-            <div class="content hidden" id="achievementsContent">
+            <div class="content" id="achievementsContent">
                 <div class="logo">
                     <div class="logo-circle">S</div>
                     <div class="logo-text">RANK</div>
@@ -617,7 +633,7 @@
                 </div>
             </div>
 
-            <div class="content hidden" id="contactContent">
+            <div class="content" id="contactContent">
                 <div class="logo">
                     <div class="logo-circle">S</div>
                     <div class="logo-text">RANK</div>
@@ -679,6 +695,7 @@
         let currentSection = 0;
         let lastScrollTime = 0;
         const sections = ['about', 'skills', 'projects', 'achievements', 'contact'];
+        let isScrolling = false;
 
         // Initialize particles
         function initializeParticles() {
@@ -726,31 +743,44 @@
             const contents = document.querySelectorAll('.content');
             const navItems = document.querySelectorAll('.nav-item');
 
-            contents.forEach(content => content.classList.add('hidden'));
+            contents.forEach((content, i) => {
+                content.classList.remove('active', 'exit-up', 'exit-down');
+                if (i < index) {
+                    content.classList.add('exit-up');
+                } else if (i > index) {
+                    content.classList.add('exit-down');
+                }
+            });
+            
             navItems.forEach(item => item.classList.remove('active'));
 
-            contents[index].classList.remove('hidden');
+            contents[index].classList.add('active');
             navItems[index].classList.add('active');
 
             currentSection = index;
         }
 
-        // Scroll navigation
+        // Scroll navigation - One complete scroll per slide
         window.addEventListener('wheel', (e) => {
             const now = Date.now();
-            if (now - lastScrollTime < 800) return;
+            // Increase cooldown to ensure one scroll per slide
+            if (now - lastScrollTime < 1200) return;
+
+            if (Math.abs(e.deltaY) < 30) return; // Ignore small scrolls
 
             if (e.deltaY > 0) {
                 // Scroll down - next section
-                currentSection = (currentSection + 1) % sections.length;
-                lastScrollTime = now;
+                if (currentSection < sections.length - 1) {
+                    showSection(currentSection + 1);
+                    lastScrollTime = now;
+                }
             } else if (e.deltaY < 0) {
                 // Scroll up - previous section
-                currentSection = (currentSection - 1 + sections.length) % sections.length;
-                lastScrollTime = now;
+                if (currentSection > 0) {
+                    showSection(currentSection - 1);
+                    lastScrollTime = now;
+                }
             }
-
-            showSection(currentSection);
         }, { passive: true });
 
         // Initialize on load
