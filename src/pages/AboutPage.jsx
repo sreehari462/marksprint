@@ -86,7 +86,7 @@ export default function AboutPage() {
               <div>
                 <p className="text-lg font-bold text-[#7fdfff]">K.P. SURYA</p>
                 <a 
-                  href="https://portfolio-page-surya.html" 
+                  href="portfolio-page-surya.html" 
                   target="_blank" 
                   rel="noreferrer"
                   className="text-[#2aa8d8] hover:text-[#00d2ff] transition-colors duration-300 flex items-center justify-center gap-2 mt-3"
