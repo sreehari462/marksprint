@@ -20,7 +20,8 @@
     "react-helmet-async": "^3.0.0",
     "react-router-dom": "^7.14.1",
     "tailwindcss": "^4.2.4",
-    "three": "^0.184.0"
+    "three": "^0.184.0",
+    "vercel": "^50.41.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

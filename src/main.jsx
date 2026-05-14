@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage.jsx';
 import QuizPage from './pages/QuizPage.jsx';
-import PortfolioUrl from './pages/PortfolioPage.html?url';
+const PortfolioUrl = '/PortfolioPage.html';
 import AboutPage from './pages/AboutPage.jsx';
 import MainLayout from './layouts/MainLayout.jsx';
 import { ThemeProvider } from './context/ThemeProvider.jsx';

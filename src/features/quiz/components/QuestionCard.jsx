@@ -37,26 +37,26 @@ export default function QuestionCard({
 
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
           {currentQ.displayOptions.map((opt, i) => {
-            let statusClasses = "bg-[rgba(255,255,255,0.03)] border-[rgba(255,255,255,0.1)] text-gray-200 hover:bg-[rgba(255,255,255,0.08)] hover:border-cyan-400/50 hover:shadow-[0_0_15px_rgba(0,210,255,0.2)] hover:text-white rounded-2xl";
+            let statusClasses = "bg-[rgba(255,255,255,0.03)] border-[rgba(255,255,255,0.1)] text-gray-200 hover:bg-[rgba(255,255,255,0.08)] hover:border-cyan-400/50 hover:shadow-[0_0_15px_rgba(0,210,255,0.2)] hover:text-white rounded-2xl h-auto aspect-auto";
             let showCorrectIcon = false;
             let showWrongIcon = false;
 
             if (isLocked) {
               if (isTestMode) {
                 if (opt.text === userAnswer) {
-                  statusClasses = "bg-cyan-500/20 border-cyan-400 text-white neon-box-blue rounded-2xl";
+                  statusClasses = "bg-cyan-500/20 border-cyan-400 text-white neon-box-blue rounded-2xl h-auto aspect-auto";
                 } else {
-                  statusClasses = "bg-[rgba(0,0,0,0.4)] border-[rgba(255,255,255,0.05)] text-gray-500 rounded-2xl";
+                  statusClasses = "bg-[rgba(0,0,0,0.4)] border-[rgba(255,255,255,0.05)] text-gray-500 rounded-2xl h-auto aspect-auto";
                 }
               } else {
                 if (opt.text === currentQ.answer) {
-                  statusClasses = "bg-green-600/40 border-green-400 text-white shadow-[0_0_30px_rgba(34,197,94,0.8)] ring-2 ring-green-500/50 rounded-2xl";
+                  statusClasses = "bg-green-600/40 border-green-400 text-white shadow-[0_0_30px_rgba(34,197,94,0.8)] ring-2 ring-green-500/50 rounded-2xl h-auto aspect-auto";
                   showCorrectIcon = true;
                 } else if (opt.text === userAnswer) {
-                  statusClasses = "bg-red-600/40 border-red-400 text-white shadow-[0_0_30px_rgba(239,68,68,0.8)] ring-2 ring-red-500/50 rounded-2xl";
+                  statusClasses = "bg-red-600/40 border-red-400 text-white shadow-[0_0_30px_rgba(239,68,68,0.8)] ring-2 ring-red-500/50 rounded-2xl h-auto aspect-auto";
                   showWrongIcon = true;
                 } else {
-                  statusClasses = "bg-[rgba(0,0,0,0.4)] border-[rgba(255,255,255,0.05)] text-gray-500 rounded-2xl";
+                  statusClasses = "bg-[rgba(0,0,0,0.4)] border-[rgba(255,255,255,0.05)] text-gray-500 rounded-2xl h-auto aspect-auto";
                 }
               }
             }
@@ -64,7 +64,7 @@ export default function QuestionCard({
             return (
               <button 
                 key={`${currentIdx}-${i}`}
-                className={`flex items-center w-full min-h-[5rem] px-8 py-6 rounded-2xl border backdrop-blur-md transition-all duration-300 ${!isLocked ? 'hover:-translate-y-1 cursor-pointer' : 'cursor-default'} ${statusClasses}`}
+                className={`flex items-center w-full min-h-[5rem] px-8 py-6 rounded-2xl border backdrop-blur-md transition-all duration-300 h-auto aspect-auto ${!isLocked ? 'hover:-translate-y-1 cursor-pointer' : 'cursor-default'} ${statusClasses}`}
                 onClick={() => handleAnswer(opt.text)}
                 disabled={isLocked}
               >
