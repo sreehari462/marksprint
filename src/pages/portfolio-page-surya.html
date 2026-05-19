@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K.P.Surya - Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+            color: #e0e7ff;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            position: relative;
+        }
+
+        /* Particle background */
+        .particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background-color: white;
+            opacity: 0.2;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) translateX(0px);
+                opacity: 0.2;
+            }
+            50% {
+                transform: translateY(-20px) translateX(10px);
+                opacity: 0.5;
+            }
+        }
+
+        /* Spark effects */
+        .spark-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 160px;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .spark {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background-color: #fbbf24;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #fbbf24, 0 0 16px rgba(251, 191, 36, 0.5);
+        }
+
+        @keyframes spark-rise {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(var(--tx));
+                opacity: 0;
+            }
+        }
+
+        /* Left section - Text content */
+        .left-section {
+            width: 40%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
+            z-index: 10;
+            position: relative;
+        }
+
+        .content {
+            width: 100%;
+            max-width: 600px;
+            transition: all 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+            position: absolute;
+            opacity: 0;
+            transform: translateY(50px);
+            pointer-events: none;
+        }
+
+        .content.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+            position: relative;
+        }
+
+        .content.exit-up {
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+
+        .content.exit-down {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        /* Middle section - Image */
+        .middle-section {
+            width: 30%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            z-index: 10;
+            position: relative;
+        }
+
+        .middle-section img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            opacity: 0.95;
+        }
+
+        /* Right section - Menu */
+        .right-section {
+            width: 30%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-right: 32px;
+            z-index: 10;
+            position: relative;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            text-align: right;
+        }
+
+        .nav-item {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #e0e7ff;
+            background: none;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 0;
+        }
+
+        .nav-item:hover {
+            color: white;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-item.active {
+            color: white;
+            font-size: 14px;
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-item.active::after {
+            content: " •";
+            color: white;
+            margin-left: 8px;
+        }
+
+        /* Content styling */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .logo-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid #fbbf24;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            color: #fbbf24;
+        }
+
+        .logo-text {
+            color: #fbbf24;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 12px;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 60px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 48px;
+        }
+
+        .description {
+            color: #e0e7ff;
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 500px;
+        }
+
+        .description p {
+            margin-bottom: 24px;
+        }
+
+        /* Skills styling */
+        .skill-item {
+            border: 1px solid #1e5a96;
+            border-radius: 0;
+            padding: 16px;
+            background-color: rgba(26, 77, 122, 0.4);
+            backdrop-filter: blur(4px);
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .skill-item:hover {
+            border-color: white;
+        }
+
+        .skill-label {
+            color: #fbbf24;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-right: 16px;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .skill-description {
+            color: #e0e7ff;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        /* Projects styling */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .project-card {
+            border: 1px solid #1e5a96;
+            border-radius: 0;
+            padding: 24px;
+            background-color: rgba(26, 77, 122, 0.4);
+            backdrop-filter: blur(4px);
+            transition: all 0.3s ease;
+        }
+
+        .project-card:hover {
+            border-color: white;
+        }
+
+        .project-title {
+            font-weight: 700;
+            color: white;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .project-description {
+            color: #e0e7ff;
+            font-size: 12px;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .project-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .project-link {
+            color: #94a3b8;
+            font-size: 11px;
+            font-style: italic;
+        }
+
+        .project-status {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 0;
+            border: 1px solid;
+            white-space: nowrap;
+        }
+
+        .status-completed {
+            border-color: #10b981;
+            color: #10b981;
+        }
+
+        .status-working {
+            border-color: #f59e0b;
+            color: #f59e0b;
+        }
+
+        /* Achievements styling */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .achievement-card {
+            border: 1px solid #1e5a96;
+            border-radius: 0;
+            padding: 24px;
+            background-color: rgba(26, 77, 122, 0.4);
+            backdrop-filter: blur(4px);
+            transition: all 0.3s ease;
+            display: flex;
+            gap: 16px;
+        }
+
+        .achievement-card:hover {
+            border-color: white;
+        }
+
+        .achievement-icon {
+            color: #fbbf24;
+            flex-shrink: 0;
+            font-size: 18px;
+        }
+
+        .achievement-text h3 {
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .achievement-text p {
+            color: #94a3b8;
+            font-size: 11px;
+        }
+
+        .certifications {
+            margin-top: 24px;
+        }
+
+        .cert-title {
+            color: #fbbf24;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cert-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .cert-badge {
+            border: 1px solid #1e5a96;
+            border-radius: 0;
+            padding: 8px 16px;
+            color: #e0e7ff;
+            font-size: 12px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .cert-badge:hover {
+            border-color: white;
+        }
+
+        /* Contact styling */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .contact-card {
+            border: 1px solid #1e5a96;
+            border-radius: 0;
+            padding: 24px;
+            background-color: rgba(26, 77, 122, 0.4);
+            backdrop-filter: blur(4px);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            gap: 16px;
+            cursor: pointer;
+        }
+
+        .contact-card:hover {
+            border-color: white;
+        }
+
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #fbbf24;
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fbbf24;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .contact-card:hover .contact-icon {
+            background-color: rgba(251, 191, 36, 0.2);
+        }
+
+        .contact-text label {
+            color: #94a3b8;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            display: block;
+        }
+
+        .contact-text p {
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .contact-footer {
+            color: #94a3b8;
+            font-size: 13px;
+            letter-spacing: 1px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    <div class="spark-container" id="sparkContainer"></div>
+    <div class="container">
+        <!-- LEFT: Text Content -->
+        <div class="left-section">
+            <div class="content" id="aboutContent">
+                <div class="logo">
+                    <div class="logo-circle">S</div>
+                    <div class="logo-text">RANK</div>
+                </div>
+                <p class="subtitle">PROTAGONIST OF THE GRIND</p>
+                <h1>K.P.Surya</h1>
+                <div class="description">
+                    <p>I'm the protagonist of my own grind. I started off like everyone else, but I decided to push my limits and see how far I could go.</p>
+                    <p>My journey is defined by continuous learning, building, and evolving. I don't just write code; I craft experiences and solve problems that matter.</p>
+                </div>
+            </div>
+
+            <div class="content" id="skillsContent">
+                <div class="logo">
+                    <div class="logo-circle">S</div>
+                    <div class="logo-text">RANK</div>
+                </div>
+                <p class="subtitle">ARSENAL</p>
+                <h1>SKILLS</h1>
+                <div class="skill-item">
+                    <span class="skill-label">FRONTEND</span>
+                    <span class="skill-description">React, Vite, Tailwind CSS, Framer Motion</span>
+                </div>
+                <div class="skill-item">
+                    <span class="skill-label">BACKEND</span>
+                    <span class="skill-description">Python (basic server concepts), Node.js (learning)</span>
+                </div>
+                <div class="skill-item">
+                    <span class="skill-label">TOOLS</span>
+                    <span class="skill-description">Git, Vercel</span>
+                </div>
+                <div class="skill-item">
+                    <span class="skill-label">CURRENTLY EXPLORING</span>
+                    <span class="skill-description">Electronics, Vite</span>
+                </div>
+            </div>
+
+            <div class="content" id="projectsContent">
+                <div class="logo">
+                    <div class="logo-circle">S</div>
+                    <div class="logo-text">RANK</div>
+                </div>
+                <p class="subtitle">DUNGEONS CONQUERED</p>
+                <h1>PROJECTS</h1>
+                <div class="projects-grid">
+                    <div class="project-card">
+                        <div class="project-title">MARKSPRINT</div>
+                        <div class="project-description">A productivity / exam tracker platform deployed on Vercel.</div>
+                        <div class="project-footer">
+                            <span class="project-link">marksprint-nu.vercel.app</span>
+                            <span class="project-status status-completed">✓ completed</span>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <div class="project-title">PORTFOLIO WEBSITE</div>
+                        <div class="project-description">The very site you are exploring now—built from scratch.</div>
+                        <div class="project-footer">
+                            <span class="project-link">this one</span>
+                            <span class="project-status status-completed">✓ completed</span>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <div class="project-title">IDE</div>
+                        <div class="project-description">A custom integrated development environment with a focus on speed.</div>
+                        <div class="project-footer">
+                            <span class="project-link"></span>
+                            <span class="project-status status-working">⚙ working</span>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <div class="project-title">RC CAR ON MECANUM WHEELS</div>
+                        <div class="project-description">An omnidirectional RC car built on a mecanum-wheel chassis.</div>
+                        <div class="project-footer">
+                            <span class="project-link">hardware build</span>
+                            <span class="project-status status-working">⚙ working</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content" id="achievementsContent">
+                <div class="logo">
+                    <div class="logo-circle">S</div>
+                    <div class="logo-text">RANK</div>
+                </div>
+                <p class="subtitle">QUESTS COMPLETED</p>
+                <h1>ACHIEVEMENTS</h1>
+                <div class="achievements-grid">
+                    <div class="achievement-card">
+                        <div class="achievement-icon">🏆</div>
+                        <div class="achievement-text">
+                            <h3>Scored 456/500</h3>
+                            <p>10th Board Exams</p>
+                        </div>
+                    </div>
+                    <div class="achievement-card">
+                        <div class="achievement-icon">🏆</div>
+                        <div class="achievement-text">
+                            <h3>your achievment</h3>
+                            <p>summary</p>
+                        </div>
+                    </div>
+                    <div class="achievement-card">
+                        <div class="achievement-icon">🏆</div>
+                        <div class="achievement-text">
+                            <h3>your achievment</h3>
+                            <p>summary</p>
+                        </div>
+                    </div>
+                    <div class="achievement-card">
+                        <div class="achievement-icon">🏆</div>
+                        <div class="achievement-text">
+                            <h3>your achievment</h3>
+                            <p>summary</p>
+                        </div>
+                    </div>
+                    <div class="achievement-card">
+                        <div class="achievement-icon">🏆</div>
+                        <div class="achievement-text">
+                            <h3>your achievment </h3>
+                            <p>summary</p>
+                        </div>
+                    </div>
+                    <div class="achievement-card">
+                        <div class="achievement-icon">🏆</div>
+                        <div class="achievement-text">
+                            <h3>your achievment</h3>
+                            <p>summary</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="certifications">
+                    <div class="cert-title">🏆 CERTIFICATIONS</div>
+                    <div class="cert-badges">
+                        <div class="cert-badge">C</div>
+                        <div class="cert-badge">C++</div>
+                        <div class="cert-badge">Java</div>
+                        <div class="cert-badge">Python</div>
+                        <div class="cert-badge">Visual Basics</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content" id="contactContent">
+                <div class="logo">
+                    <div class="logo-circle">A</div>
+                    <div class="logo-text">RANK</div>
+                </div>
+                <p class="subtitle">OPEN A GATE</p>
+                <h1>CONTACT</h1>
+                <div class="contact-grid">
+                    <a href="mailto:surya@gmail.com" class="contact-card">
+                        <div class="contact-icon">✉</div>
+                        <div class="contact-text">
+                            <label>EMAIL</label>
+                            <p>surya@gmail.com</p>
+                        </div>
+                    </a>
+                    <a href="https://instagram.com/#surya51" target="_blank" class="contact-card">
+                        <div class="contact-icon">📷</div>
+                        <div class="contact-text">
+                            <label>INSTAGRAM</label>
+                            <p>#surya51</p>
+                        </div>
+                    </a>
+                    <a href="https://github.com/sreehari462" target="_blank" class="contact-card">
+                        <div class="contact-icon">⚙</div>
+                        <div class="contact-text">
+                            <label>GITHUB</label>
+                            <p>sreehari462</p>
+                        </div>
+                    </a>
+                    <a href="https://linkedin.com/in/sreehari" target="_blank" class="contact-card">
+                        <div class="contact-icon">💼</div>
+                        <div class="contact-text">
+                            <label>LINKEDIN</label>
+                            <p>sreehari</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="contact-footer">ARISE. LET'S BUILD SOMETHING LEGENDARY.</div>
+            </div>
+        </div>
+
+        <!-- MIDDLE: Character Image -->
+        <div class="middle-section">
+            <img src="rohit.jpg" alt="Character">
+        </div>
+
+        <!-- RIGHT: Navigation Menu -->
+        <div class="right-section">
+            <div class="nav-menu">
+                <button class="nav-item active" onclick="showSection(0)">ABOUT</button>
+                <button class="nav-item" onclick="showSection(1)">SKILLS</button>
+                <button class="nav-item" onclick="showSection(2)">PROJECTS</button>
+                <button class="nav-item" onclick="showSection(3)">ACHIEVEMENTS</button>
+                <button class="nav-item" onclick="showSection(4)">CONTACT</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSection = 0;
+        let lastScrollTime = 0;
+        const sections = ['about', 'skills', 'projects', 'achievements', 'contact'];
+        let isScrolling = false;
+
+        // Initialize particles
+        function initializeParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const size = Math.random() * 3 + 1;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animation = `float ${Math.random() * 20 + 10}s infinite`;
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Create spark effects
+        function createSpark() {
+            const sparkContainer = document.getElementById('sparkContainer');
+            const spark = document.createElement('div');
+            spark.className = 'spark';
+            const left = Math.random() * 100;
+            const delay = Math.random() * 0.5;
+            const duration = Math.random() * 1.5 + 1.5;
+            const tx = (Math.random() - 0.5) * 100;
+
+            spark.style.left = left + '%';
+            spark.style.bottom = '0';
+            spark.style.setProperty('--tx', tx + 'px');
+            spark.style.animation = `spark-rise ${duration}s linear ${delay}s forwards`;
+
+            sparkContainer.appendChild(spark);
+
+            setTimeout(() => {
+                spark.remove();
+            }, (delay + duration) * 1000);
+        }
+
+        // Start spark creation
+        setInterval(createSpark, 200);
+
+        // Show section
+        function showSection(index) {
+            const contents = document.querySelectorAll('.content');
+            const navItems = document.querySelectorAll('.nav-item');
+
+            contents.forEach((content, i) => {
+                content.classList.remove('active', 'exit-up', 'exit-down');
+                if (i < index) {
+                    content.classList.add('exit-up');
+                } else if (i > index) {
+                    content.classList.add('exit-down');
+                }
+            });
+            
+            navItems.forEach(item => item.classList.remove('active'));
+
+            contents[index].classList.add('active');
+            navItems[index].classList.add('active');
+
+            currentSection = index;
+        }
+
+        // Scroll navigation - One complete scroll per slide
+        window.addEventListener('wheel', (e) => {
+            const now = Date.now();
+            // Increase cooldown to ensure one scroll per slide
+            if (now - lastScrollTime < 1200) return;
+
+            if (Math.abs(e.deltaY) < 30) return; // Ignore small scrolls
+
+            if (e.deltaY > 0) {
+                // Scroll down - next section
+                if (currentSection < sections.length - 1) {
+                    showSection(currentSection + 1);
+                    lastScrollTime = now;
+                }
+            } else if (e.deltaY < 0) {
+                // Scroll up - previous section
+                if (currentSection > 0) {
+                    showSection(currentSection - 1);
+                    lastScrollTime = now;
+                }
+            }
+        }, { passive: true });
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            initializeParticles();
+            showSection(0);
+        });
+    </script>
+</body>
+</html>
