@@ -9,7 +9,7 @@ The Content Manager is a secure, feature-rich question management system for Mar
 ### 1. Security & Access Control
 
 #### Password Protection
-- **Password**: `.Sreeh@r!462` (12 characters with mixed case, symbols, and numbers)
+- **Password:** Configured by the site administrator via environment variables. Do NOT commit passwords or secrets to the repository.
 - **Character-by-character input**: Each character has its own box for precise input
 - **Real-time validation**: 
   - Green boxes = Correct character in correct position

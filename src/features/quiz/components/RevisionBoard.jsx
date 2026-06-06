@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import DOMPurify from 'dompurify';
 import { CheckCircle2, ArrowLeft } from "lucide-react";
 
 export default function RevisionBoard({ engine }) {
@@ -64,7 +65,7 @@ export default function RevisionBoard({ engine }) {
               
               <div className="flex items-start gap-4 mb-6">
                 <span className="flex items-center justify-center w-8 h-8 rounded-full bg-[rgba(255,255,255,0.1)] text-gray-300 font-bold text-sm shrink-0">{idx + 1}</span>
-                <h3 className="text-lg md:text-xl text-white font-medium leading-loose drop-shadow-sm flex-1 pt-0.5" dangerouslySetInnerHTML={{ __html: item.question }} />
+                <h3 className="text-lg md:text-xl text-white font-medium leading-loose drop-shadow-sm flex-1 pt-0.5" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item.question) }} />
               </div>
 
               {item.question_image && <img src={item.question_image} alt="Question" className="max-w-full md:max-w-[400px] ml-12 mb-8 rounded-xl border border-[rgba(255,255,255,0.1)] shadow-[0_5px_15px_rgba(0,0,0,0.4)]" />}
@@ -78,7 +79,7 @@ export default function RevisionBoard({ engine }) {
                     {option.text === item.answer && <CheckCircle2 size={24} className="text-green-400 shrink-0 mt-0.5" />}
                     <div className="flex-1">
                       {option.img && <img src={option.img} alt="Option" className="max-w-[150px] mb-2 rounded border border-[rgba(255,255,255,0.1)]" />}
-                      <span className="text-base font-semibold text-white/90 block" dangerouslySetInnerHTML={{ __html: option.text }} />
+                      <span className="text-base font-semibold text-white/90 block" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(option.text) }} />
                     </div>
                   </div>
                 ))}
@@ -86,7 +87,7 @@ export default function RevisionBoard({ engine }) {
 
               <div className="ml-12 p-5 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
                 <span className="block text-[10px] uppercase tracking-widest opacity-80 mb-2 font-bold text-gray-400">Correct Answer</span>
-                <span className="text-base font-semibold text-cyan-300" dangerouslySetInnerHTML={{ __html: item.answer }} />
+                <span className="text-base font-semibold text-cyan-300" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item.answer) }} />
               </div>
             </div>
           ))}
