@@ -1,4 +1,5 @@
 import React from 'react';
+import DOMPurify from 'dompurify';
 import { CheckCircle2, XCircle } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -24,7 +25,7 @@ export default function QuestionCard({
       >
         <div className="w-full bg-[rgba(15,20,30,0.6)] backdrop-blur-2xl border border-[rgba(255,255,255,0.1)] rounded-3xl p-10 md:p-16 mb-10 shadow-[0_0_40px_rgba(0,0,0,0.5)] relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent"></div>
-          <h2 className="text-xl md:text-3xl leading-loose text-white font-semibold drop-shadow-md" dangerouslySetInnerHTML={{ __html: currentQ.question || "" }} />
+          <h2 className="text-xl md:text-3xl leading-loose text-white font-semibold drop-shadow-md" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(currentQ.question || "") }} />
           {currentQ.question_image && <img src={currentQ.question_image} alt="Question" className="max-w-full max-h-72 object-contain mx-auto mt-8 rounded-xl border border-[rgba(255,255,255,0.1)] shadow-[0_10px_30px_rgba(0,0,0,0.5)]" />}
         </div>
         
@@ -68,7 +69,7 @@ export default function QuestionCard({
                 onClick={() => handleAnswer(opt.text)}
                 disabled={isLocked}
               >
-                {opt.text && <span className="text-left w-full block text-base md:text-lg leading-relaxed font-medium" dangerouslySetInnerHTML={{ __html: opt.text }} />}
+                {opt.text && <span className="text-left w-full block text-base md:text-lg leading-relaxed font-medium" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(opt.text) }} />}
                 {opt.img && <img src={opt.img} alt={`Option ${i+1}`} className="max-w-full max-h-32 object-contain rounded my-2" />}
                 
                 {showCorrectIcon && <CheckCircle2 className="shrink-0 ml-4 text-green-300 drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]" size={24} />}

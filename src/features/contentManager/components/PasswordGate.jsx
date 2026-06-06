@@ -3,7 +3,8 @@ import { Lock, AlertCircle, Smartphone } from 'lucide-react';
 import Galaxy from '../../../components/Galaxy';
 import ClickSpark from '../../../components/ClickSpark';
 
-const CORRECT_PASSWORD = '.Sreeh@r!462';
+// The Content Manager authentication is handled by the server API.
+// The server must be configured with CONTENT_MANAGER_PASSWORD and will expose /api/auth/* endpoints.
 const MAX_ATTEMPTS = 3;
 const LOCKOUT_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
 
@@ -35,14 +36,16 @@ const isDesktopDevice = () => {
 };
 
 export default function PasswordGate({ onUnlock }) {
-  const [passwordInput, setPasswordInput] = useState(Array(CORRECT_PASSWORD.length).fill(''));
+  const PASSWORD_LENGTH = 12;
+  const [passwordInput, setPasswordInput] = useState(Array(PASSWORD_LENGTH).fill(''));
   const [attempts, setAttempts] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
   const [lockoutTime, setLockoutTime] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
-  const [charValidation, setCharValidation] = useState(Array(CORRECT_PASSWORD.length).fill(null));
+  const [charValidation, setCharValidation] = useState(Array(PASSWORD_LENGTH).fill(null));
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isConfigured, setIsConfigured] = useState(true);
 
   // Check if device is desktop/PC only
   useEffect(() => {
@@ -80,18 +83,45 @@ export default function PasswordGate({ onUnlock }) {
     }
   }, []);
 
+  // Check server configuration & authentication status
+  useEffect(() => {
+    const checkStatus = async () => {
+      try {
+        const res = await fetch('/api/auth/status', { credentials: 'include' });
+        if (res.status === 503) {
+          setIsConfigured(false);
+          setIsLoading(false);
+          return;
+        }
+        if (res.status === 200) {
+          const json = await res.json();
+          if (json.authenticated) {
+            onUnlock();
+            return;
+          }
+        }
+      } catch (e) {
+        // If server is not reachable, assume configured (so UI shows login)
+        console.warn('Auth server not reachable:', e);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    checkStatus();
+  }, [onUnlock]);
+
   // Handle lockout timer countdown
   useEffect(() => {
     if (!lockoutTime) return;
-    
+
     const interval = setInterval(() => {
       const now = Date.now();
       if (now >= lockoutTime) {
         setIsLocked(false);
         setLockoutTime(null);
         setAttempts(0);
-        setPasswordInput(Array(CORRECT_PASSWORD.length).fill(''));
-        setCharValidation(Array(CORRECT_PASSWORD.length).fill(null));
+        setPasswordInput(Array(PASSWORD_LENGTH).fill(''));
+        setCharValidation(Array(PASSWORD_LENGTH).fill(null));
         localStorage.removeItem('contentManagerLockout');
         clearInterval(interval);
       }
@@ -118,14 +148,14 @@ export default function PasswordGate({ onUnlock }) {
     setPasswordInput(newInput);
 
     // Auto-move to next field if character entered
-    if (char && index < CORRECT_PASSWORD.length - 1) {
+    if (char && index < PASSWORD_LENGTH - 1) {
       const nextInput = document.getElementById(`password-char-${index + 1}`);
       if (nextInput) nextInput.focus();
     }
 
     // Check if all fields are filled
-    if (index === CORRECT_PASSWORD.length - 1 && char) {
-      validatePassword(newInput);
+    if (index === PASSWORD_LENGTH - 1 && char) {
+      submitPassword(newInput.join(''));
     }
   };
 
@@ -145,49 +175,59 @@ export default function PasswordGate({ onUnlock }) {
       e.preventDefault();
       const prevInput = document.getElementById(`password-char-${index - 1}`);
       if (prevInput) prevInput.focus();
-    } else if (e.key === 'ArrowRight' && index < CORRECT_PASSWORD.length - 1) {
+    } else if (e.key === 'ArrowRight' && index < PASSWORD_LENGTH - 1) {
       e.preventDefault();
       const nextInput = document.getElementById(`password-char-${index + 1}`);
       if (nextInput) nextInput.focus();
     }
   };
 
-  const validatePassword = (input) => {
-    const enteredPassword = input.join('');
+  const submitPassword = async (enteredPassword) => {
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ password: enteredPassword })
+      });
 
-    // Validate each character
-    const validation = input.map((char, idx) => {
-      if (char === CORRECT_PASSWORD[idx]) return 'correct';
-      if (char === '') return null;
-      return 'incorrect';
-    });
+      if (res.status === 200) {
+        setErrorMessage('');
+        setAttempts(0);
+        localStorage.removeItem('contentManagerLockout');
+        setTimeout(() => onUnlock(), 300);
+        return;
+      }
 
-    setCharValidation(validation);
-
-    if (enteredPassword === CORRECT_PASSWORD) {
-      setErrorMessage('');
-      setAttempts(0);
-      localStorage.removeItem('contentManagerLockout');
-      setTimeout(() => onUnlock(), 500);
-    } else {
-      const newAttempts = attempts + 1;
-      setAttempts(newAttempts);
-
-      if (newAttempts >= MAX_ATTEMPTS) {
+      if (res.status === 423) {
         const lockoutEnd = Date.now() + LOCKOUT_DURATION;
         localStorage.setItem('contentManagerLockout', lockoutEnd.toString());
         setIsLocked(true);
         setLockoutTime(lockoutEnd);
         setErrorMessage('Too many incorrect attempts. Locked for 30 minutes.');
-      } else {
-        setErrorMessage(`Incorrect password. ${MAX_ATTEMPTS - newAttempts} attempts remaining.`);
+        return;
       }
 
-      // Reset input for next attempt
+      if (res.status === 401) {
+        const json = await res.json();
+        const remaining = json.remaining || (MAX_ATTEMPTS - (attempts + 1));
+        const newAttempts = attempts + 1;
+        setAttempts(newAttempts);
+        setErrorMessage(`Incorrect password. ${remaining} attempts remaining.`);
+      } else if (res.status === 503) {
+        setIsConfigured(false);
+      } else {
+        setErrorMessage('Authentication failed.');
+      }
+    } catch (e) {
+      console.error('Auth request failed', e);
+      setErrorMessage('Auth server unreachable');
+    } finally {
+      // Reset inputs for next attempt
       setTimeout(() => {
-        setPasswordInput(Array(CORRECT_PASSWORD.length).fill(''));
-        setCharValidation(Array(CORRECT_PASSWORD.length).fill(null));
-      }, 1500);
+        setPasswordInput(Array(PASSWORD_LENGTH).fill(''));
+        setCharValidation(Array(PASSWORD_LENGTH).fill(null));
+      }, 800);
     }
   };
 
@@ -208,6 +248,33 @@ export default function PasswordGate({ onUnlock }) {
           <Galaxy isDark={true} />
           <div className="relative z-10">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00d2ff]"></div>
+          </div>
+        </div>
+      </ClickSpark>
+    );
+  }
+
+  // If the server reports the auth feature is not configured, show a safe message and disable the gate.
+  if (isConfigured === false) {
+    return (
+      <ClickSpark isDark={true}>
+        <div className="min-h-screen w-full relative flex flex-col items-center justify-center bg-[#0b1f2a] text-[#9fe3ff] p-4 overflow-hidden">
+          <Galaxy isDark={true} />
+          <div className="relative z-10 max-w-md w-full">
+            <div className="bg-[rgba(255,255,255,0.03)] backdrop-blur-xl border border-[rgba(255,255,255,0.05)] rounded-none p-12 shadow-[0_0_20px_rgba(0,210,255,0.1)] text-center">
+              <h1 className="text-2xl font-bold text-[#7fdfff] mb-4">Content Manager Unavailable</h1>
+              <p className="text-[#9fe3ff] mb-6 leading-relaxed">
+                The Content Manager is not configured on this deployment. For security, the administrative
+                password must be provided via an environment variable and should never be committed to source.
+              </p>
+              <p className="text-xs text-[#2aa8d8]">Contact the site administrator to enable access.</p>
+              <button
+                onClick={() => window.location.href = '/'}
+                className="mt-6 w-full px-6 py-3 bg-[#2aa8d8] hover:bg-[#00d2ff] text-[#0b1f2a] font-semibold rounded-none transition-all duration-300 transform hover:scale-105"
+              >
+                Return to Home
+              </button>
+            </div>
           </div>
         </div>
       </ClickSpark>
@@ -325,7 +392,7 @@ export default function PasswordGate({ onUnlock }) {
 
             <div className="mb-8">
               <label className="block text-center text-[#9fe3ff] mb-4 font-semibold">
-                Password ({CORRECT_PASSWORD.length} characters)
+                Password ({PASSWORD_LENGTH} characters)
               </label>
               <div className="flex justify-center gap-2 flex-wrap">
                 {passwordInput.map((char, index) => (

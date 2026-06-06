@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import Papa from 'papaparse';
+import CryptoJS from 'crypto-js';
 
 import physicsCsv from '../../../data/physics.csv?url';
 import chemistryCsv from '../../../data/chemistry.csv?url';
@@ -50,16 +51,36 @@ export function useContentManager() {
     const loadAllData = async () => {
       setLoading(true);
       try {
-        // Load from localStorage first
+        // Load from localStorage first (decrypt if storage key is provided)
         const storedData = localStorage.getItem('contentManagerData');
         let localQuestions = [];
         let localSubjects = [...DEFAULT_SUBJECTS];
 
         if (storedData) {
-          const parsed = JSON.parse(storedData);
-          localQuestions = parsed.questions || [];
-          if (parsed.subjects && parsed.subjects.length > 0) {
-            localSubjects = [...new Set([...DEFAULT_SUBJECTS, ...parsed.subjects])];
+          try {
+            const storageKey = import.meta.env.VITE_CONTENT_MANAGER_STORAGE_KEY || null;
+            let parsed = null;
+            if (storageKey) {
+              try {
+                const bytes = CryptoJS.AES.decrypt(storedData, storageKey);
+                const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+                parsed = JSON.parse(decrypted);
+              } catch (e) {
+                console.warn('Failed to decrypt contentManagerData with provided storage key. Falling back to plaintext parsing.');
+                parsed = JSON.parse(storedData);
+              }
+            } else {
+              // No storage key configured; read as plaintext but log a warning
+              console.warn('No VITE_CONTENT_MANAGER_STORAGE_KEY configured; contentManagerData will be read in plaintext. Configure a storage key to enable encryption.');
+              parsed = JSON.parse(storedData);
+            }
+
+            localQuestions = parsed.questions || [];
+            if (parsed.subjects && parsed.subjects.length > 0) {
+              localSubjects = [...new Set([...DEFAULT_SUBJECTS, ...parsed.subjects])];
+            }
+          } catch (e) {
+            console.error('Error parsing stored contentManagerData:', e);
           }
         }
 
@@ -314,7 +335,18 @@ export function useContentManager() {
       questions,
       lastUpdated: new Date().toISOString()
     };
-    localStorage.setItem('contentManagerData', JSON.stringify(data));
+    try {
+      const storageKey = import.meta.env.VITE_CONTENT_MANAGER_STORAGE_KEY || null;
+      if (storageKey) {
+        const encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), storageKey).toString();
+        localStorage.setItem('contentManagerData', encrypted);
+      } else {
+        console.warn('Persisting contentManagerData in plaintext because no VITE_CONTENT_MANAGER_STORAGE_KEY is configured.');
+        localStorage.setItem('contentManagerData', JSON.stringify(data));
+      }
+    } catch (e) {
+      console.error('Failed to persist contentManagerData:', e);
+    }
   }, []);
 
   return {

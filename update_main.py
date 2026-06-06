@@ -1,1 +1,0 @@
-import os; p = r"C:\Users\Sree Hari\marksprint\src\main.jsx"; c = open(p).read().replace("import PortfolioPage from \"./pages/PortfolioPage.html\";", "import PortfolioUrl from \"./pages/PortfolioPage.html?url\";\nconst PortfolioPage = () => <iframe src={PortfolioUrl} style={{width:\"100%\", height:\"100vh\", border:\"none\"}} title=\"Portfolio\" />;"); open(p, "w").write(c)

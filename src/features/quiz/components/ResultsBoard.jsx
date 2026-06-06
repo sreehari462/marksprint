@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import DOMPurify from 'dompurify';
 import { Repeat, Home, CheckCircle2, XCircle } from "lucide-react";
 import confetti from "canvas-confetti";
 import { useNavigate } from "react-router-dom";
@@ -87,7 +88,7 @@ export default function ResultsBoard({ engine }) {
               
               <div className="flex items-start gap-4 mb-6">
                 <span className="flex items-center justify-center w-8 h-8 rounded-full bg-[rgba(255,255,255,0.1)] text-gray-300 font-bold text-sm shrink-0">{idx + 1}</span>
-                <h3 className="text-lg md:text-xl text-white font-medium leading-loose drop-shadow-sm flex-1 pt-0.5" dangerouslySetInnerHTML={{ __html: item.questionObj.question }} />
+                <h3 className="text-lg md:text-xl text-white font-medium leading-loose drop-shadow-sm flex-1 pt-0.5" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item.questionObj.question) }} />
               </div>
 
               {item.questionObj.question_image && <img src={item.questionObj.question_image} alt="Question" className="max-w-full md:max-w-[400px] ml-12 mb-8 rounded-xl border border-[rgba(255,255,255,0.1)] shadow-[0_5px_15px_rgba(0,0,0,0.4)]" />}
@@ -97,7 +98,7 @@ export default function ResultsBoard({ engine }) {
                 {item.isCorrect ? <CheckCircle2 size={24} className="text-green-300 shrink-0" /> : <XCircle size={24} className="text-red-300 shrink-0" />}
                 <div>
                   <span className="block text-[10px] uppercase tracking-widest opacity-80 mb-1 font-bold text-gray-300">Your Answer</span>
-                  <span className="text-base font-semibold text-white" dangerouslySetInnerHTML={{ __html: item.userAnswer || "Skipped / Timeout" }} />
+                  <span className="text-base font-semibold text-white" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item.userAnswer || "Skipped / Timeout") }} />
                 </div>
               </div>
               
@@ -106,7 +107,7 @@ export default function ResultsBoard({ engine }) {
                     <CheckCircle2 size={24} className="text-green-400 shrink-0" />
                     <div>
                       <span className="block text-[10px] uppercase tracking-widest opacity-80 mb-1 font-bold text-gray-400">Correct Answer</span>
-                      <span className="text-base font-semibold text-white/90" dangerouslySetInnerHTML={{ __html: item.questionObj.answer }} />
+                      <span className="text-base font-semibold text-white/90" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item.questionObj.answer) }} />
                     </div>
                   </div>
                 )}

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import Papa from 'papaparse';
+import CryptoJS from 'crypto-js';
 
 import physicsCsv from '../../../data/physics.csv?url';
 import chemistryCsv from '../../../data/chemistry.csv?url';
@@ -75,12 +76,31 @@ export function useQuizEngine(subject) {
         // Get the proper subject name for matching
         const properSubjectName = SUBJECT_MAP[subject?.toLowerCase()] || subject;
         
-        // Load localStorage data first
+        // Load localStorage data first (decrypt if storage key provided)
         const storedData = localStorage.getItem('contentManagerData');
         let localQuestions = [];
         if (storedData) {
-          const parsed = JSON.parse(storedData);
-          localQuestions = parsed.questions || [];
+          try {
+            const storageKey = import.meta.env.VITE_CONTENT_MANAGER_STORAGE_KEY || null;
+            if (storageKey) {
+              try {
+                const bytes = CryptoJS.AES.decrypt(storedData, storageKey);
+                const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+                const parsed = JSON.parse(decrypted);
+                localQuestions = parsed.questions || [];
+              } catch (e) {
+                console.warn('Failed to decrypt contentManagerData with provided storage key; falling back to plaintext parse.');
+                const parsed = JSON.parse(storedData);
+                localQuestions = parsed.questions || [];
+              }
+            } else {
+              console.warn('No VITE_CONTENT_MANAGER_STORAGE_KEY configured; reading contentManagerData as plaintext.');
+              const parsed = JSON.parse(storedData);
+              localQuestions = parsed.questions || [];
+            }
+          } catch (e) {
+            console.error('Error parsing contentManagerData:', e);
+          }
         }
 
         const csvFile = CSV_MAP[subject?.toLowerCase()];
